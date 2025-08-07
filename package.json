@@ -1,13 +1,13 @@
 {
-  "name": "voice-recorder-pro",
-  "displayName": "Voice Recorder Pro",
-  "description": "A modern, high-performance voice recording application with elegant UI and optimized audio processing",
+  "name": "juna-voice-interface",
+  "displayName": "Juna - AI Voice Assistant",
+  "description": "A modern, high-performance voice interface for AI agent interaction with elegant UI and optimized audio processing",
   "version": "1.0.0",
   "type": "module",
   "private": true,
   "author": {
-    "name": "Voice Recorder Pro Team",
-    "email": "contact@voicerecorder.app"
+    "name": "Juna Development Team",
+    "email": "contact@juna.ai"
   },
   "license": "MIT",
   "repository": {
@@ -16,7 +16,10 @@
   },
   "keywords": [
     "voice",
-    "recorder",
+    "ai",
+    "assistant",
+    "agent",
+    "interface",
     "audio",
     "tauri",
     "rust",

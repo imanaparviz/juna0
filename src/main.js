@@ -1,13 +1,13 @@
 /**
- * VOICE RECORDER - HIGH PERFORMANCE AUDIO CAPTURE
- * Optimized for performance and modern browsers
+ * JUNA - AI VOICE ASSISTANT INTERFACE
+ * High-performance voice interface for AI agent interaction
  */
 
 // ============================================================================
 // GLOBAL STATE AND CONFIGURATION
 // ============================================================================
 
-class VoiceRecorderApp {
+class JunaVoiceInterface {
   constructor() {
     this.mediaRecorder = null;
     this.audioStream = null;
@@ -59,7 +59,7 @@ class VoiceRecorderApp {
     this.bindEvents();
     this.updateUI();
     this.showNotification(
-      "App ready - Click the microphone to start!",
+      "Juna ready - Click to start talking!",
       "success"
     );
   }
@@ -186,10 +186,10 @@ class VoiceRecorderApp {
 
       // Update UI
       this.updateUI();
-      this.showNotification("Recording started", "success");
+      this.showNotification("Listening to you...", "success");
     } catch (error) {
       console.error("Recording start failed:", error);
-      this.showNotification("Recording could not be started", "error");
+      this.showNotification("Could not start listening", "error");
       this.stopAudioStream();
     }
   }
@@ -202,7 +202,7 @@ class VoiceRecorderApp {
     this.isRecording = false;
     this.stopTimer();
     this.updateUI();
-    this.showNotification("Recording stopped", "success");
+    this.showNotification("Stopped listening", "success");
   }
 
   createAudioBlob() {
@@ -251,7 +251,7 @@ class VoiceRecorderApp {
 
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const extension = this.getFileExtension();
-    const filename = `voice-recording-${timestamp}.${extension}`;
+    const filename = `juna-message-${timestamp}.${extension}`;
 
     const url = URL.createObjectURL(this.currentAudioBlob);
     const a = document.createElement("a");
@@ -266,7 +266,7 @@ class VoiceRecorderApp {
     // Clean up
     setTimeout(() => URL.revokeObjectURL(url), 1000);
 
-    this.showNotification(`File saved: ${filename}`, "success");
+    this.showNotification(`Voice message saved: ${filename}`, "success");
   }
 
   deleteRecording() {
@@ -278,7 +278,7 @@ class VoiceRecorderApp {
     this.currentAudioBlob = null;
     this.audioChunks = [];
     this.updateUI();
-    this.showNotification("Recording deleted", "warning");
+    this.showNotification("Message deleted", "warning");
   }
 
   getFileExtension() {
@@ -321,7 +321,7 @@ class VoiceRecorderApp {
     // Update microphone button
     if (this.isRecording) {
       this.elements.micButton.classList.add("recording");
-      this.elements.statusText.textContent = "Recording...";
+      this.elements.statusText.textContent = "Listening...";
       this.elements.statusText.classList.add("recording");
       this.elements.timer.classList.add("recording");
       this.elements.soundWaves.classList.add("active");
@@ -332,9 +332,9 @@ class VoiceRecorderApp {
       this.elements.soundWaves.classList.remove("active");
 
       if (this.currentAudioBlob) {
-        this.elements.statusText.textContent = "Recording ready";
+        this.elements.statusText.textContent = "Message ready";
       } else {
-        this.elements.statusText.textContent = "Click to record";
+        this.elements.statusText.textContent = "Click to talk to Juna";
         this.elements.timer.textContent = "00:00";
       }
     }
@@ -418,22 +418,22 @@ document.addEventListener("DOMContentLoaded", () => {
       <div style="display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; color: white;">
         <div>
           <h1>Browser not supported</h1>
-          <p>Your browser does not support audio recording.<br>Please use a modern browser like Chrome, Firefox or Safari.</p>
+          <p>Your browser does not support voice input.<br>Please use a modern browser like Chrome, Firefox or Safari.</p>
         </div>
       </div>
     `;
     return;
   }
 
-  // Initialize the voice recorder app
-  window.voiceRecorderApp = new VoiceRecorderApp();
+  // Initialize the Juna voice interface
+  window.junaVoiceInterface = new JunaVoiceInterface();
 
   // Cleanup on page unload
   window.addEventListener("beforeunload", () => {
-    if (window.voiceRecorderApp) {
-      window.voiceRecorderApp.destroy();
+    if (window.junaVoiceInterface) {
+      window.junaVoiceInterface.destroy();
     }
   });
 
-  console.log("🎤 Voice Recorder App initialized successfully!");
+  console.log("🤖 Juna Voice Interface initialized successfully!");
 });

@@ -1,15 +1,15 @@
-# 🎤 Voice Recorder Pro
+# 🤖 Juna - AI Voice Assistant
 
-A **high-performance, modern Tauri application** for professional audio recording with elegant user interface and optimized performance.
+A **high-performance, modern Tauri application** for AI voice interaction with elegant user interface and optimized audio processing.
 
 ## ✨ Features
 
-### 🔥 **High-Performance Audio Recording**
+### 🔥 **High-Performance Voice Interface**
 
-- **Optimized MediaRecorder API** with 128kbps bitrate
+- **Optimized MediaRecorder API** with 128kbps bitrate for AI interaction
 - **Automatic codec detection** (WebM/Opus, MP4, OGG, WAV)
-- **Echo-cancellation & noise suppression** for crystal-clear recordings
-- **Stereo recording** with 44.1kHz sample rate
+- **Echo-cancellation & noise suppression** for crystal-clear voice commands
+- **Stereo recording** with 44.1kHz sample rate for optimal AI processing
 
 ### 🎨 **Elegant User Interface**
 
@@ -28,10 +28,10 @@ A **high-performance, modern Tauri application** for professional audio recordin
 
 ### 🎹 **Keyboard Shortcuts**
 
-- **Spacebar**: Start/stop recording
-- **Enter**: Play recording
-- **Ctrl+S**: Save recording
-- **Delete**: Delete recording
+- **Spacebar**: Start/stop talking to Juna
+- **Enter**: Listen to your message
+- **Ctrl+S**: Save voice message
+- **Delete**: Delete message
 
 ## 🚀 Installation & Setup
 
@@ -65,25 +65,25 @@ npm run tauri build
 
 ## 🎯 Usage
 
-### 1. **Start Recording**
+### 1. **Start Talking to Juna**
 
 Click the large microphone button in the center or press **Spacebar**.
 
-### 2. **Recording Status**
+### 2. **Voice Input Status**
 
-- **Pulsing red button** = Recording in progress
+- **Pulsing red button** = Juna is listening
 - **Animated sound waves** around the button
-- **Live timer** shows recording duration
+- **Live timer** shows message duration
 
-### 3. **Stop Recording**
+### 3. **Stop Voice Input**
 
 Click the microphone button again or press **Spacebar**.
 
-### 4. **Playback & Management**
+### 4. **Message Management**
 
-- **Play**: Listen to recording immediately
-- **Save**: Download file with timestamp
-- **Delete**: Remove recording from memory
+- **Listen**: Replay your voice message
+- **Save Message**: Download your voice input with timestamp
+- **Delete**: Remove message from memory
 
 ## 🔧 Technical Details
 
@@ -92,13 +92,13 @@ Click the microphone button again or press **Spacebar**.
 - **HTML5** with semantic elements
 - **Modern CSS3** with custom properties and animations
 - **Vanilla JavaScript ES6+** with class-based architecture
-- **MediaRecorder API** for audio recording
+- **MediaRecorder API** for voice input capture
 
 ### **Backend Stack**
 
 - **Rust** with Tauri Framework
 - **WebView2** for cross-platform compatibility
-- **Native performance** through Rust backend
+- **Native performance** for AI voice processing
 
 ### **Audio Specifications**
 
@@ -188,25 +188,25 @@ Edit `src/styles.css`:
 
 ## 🔒 Security & Privacy
 
-- **Local processing**: All recordings stay on your device
-- **No cloud uploads**: Your data never leaves your computer
+- **Local processing**: All voice messages stay on your device
+- **No cloud uploads**: Your voice data never leaves your computer
 - **Microphone permission**: App explicitly asks for permission
 - **Memory-safe**: Rust backend prevents buffer overflows
 
 ## 🚀 Performance Tips
 
-### **For best audio quality:**
+### **For best voice interaction:**
 
 - Use an **external microphone**
-- Record in a **quiet environment**
+- Speak in a **quiet environment**
 - Install **browser updates**
 - Enable **hardware acceleration**
 
 ### **For optimal performance:**
 
 - **Chrome/Edge** for best WebM support
-- **16GB+ RAM** for longer recordings
-- **SSD storage** for fast file operations
+- **16GB+ RAM** for longer voice sessions
+- **SSD storage** for fast message processing
 
 ## 📄 License
 

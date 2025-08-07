@@ -1,4 +1,4 @@
-# 🔧 Build Instructions - Voice Recorder Pro
+# 🔧 Build Instructions - Juna Voice Interface
 
 ## 🚀 Quick Start
 
