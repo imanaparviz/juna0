@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Voice Recorder Pro",
+  "version": "1.0.0",
+  "identifier": "com.voicerecorder.app",
+  "build": {
+    "frontendDist": "../src"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "Voice Recorder Pro",
+        "label": "main",
+        "width": 500,
+        "height": 600,
+        "minWidth": 400,
+        "minHeight": 500,
+        "maxWidth": 700,
+        "maxHeight": 800,
+        "resizable": true,
+        "maximizable": false,
+        "minimizable": true,
+        "closable": true,
+        "decorations": true,
+        "alwaysOnTop": false,
+        "center": true,
+        "skipTaskbar": false,
+        "transparent": false,
+        "shadow": true,
+        "theme": "Dark"
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://fonts.googleapis.com https://fonts.gstatic.com; media-src 'self' blob: data:; connect-src 'self' blob: data:;"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "publisher": "Voice Recorder Pro",
+    "copyright": "© 2024 Voice Recorder Pro. All rights reserved.",
+    "category": "Productivity",
+    "shortDescription": "Professional voice recording application",
+    "longDescription": "A modern, high-performance voice recording application with elegant UI and optimized audio processing."
+  }
+}

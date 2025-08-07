@@ -1,0 +1,63 @@
+{
+  "name": "voice-recorder-pro",
+  "displayName": "Voice Recorder Pro",
+  "description": "A modern, high-performance voice recording application with elegant UI and optimized audio processing",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "author": {
+    "name": "Voice Recorder Pro Team",
+    "email": "contact@voicerecorder.app"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voicerecorder/voice-recorder-pro"
+  },
+  "keywords": [
+    "voice",
+    "recorder",
+    "audio",
+    "tauri",
+    "rust",
+    "performance",
+    "modern",
+    "cross-platform"
+  ],
+  "scripts": {
+    "tauri": "tauri",
+    "dev": "tauri dev",
+    "build": "tauri build",
+    "build:debug": "tauri build --debug",
+    "bundle": "tauri build --bundles all",
+    "clean": "tauri clean",
+    "icon": "tauri icon",
+    "info": "tauri info",
+    "start": "npm run dev",
+    "serve": "npm run dev",
+    "preview": "npm run build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "tauri": {
+    "build": {
+      "distDir": "src",
+      "devPath": "src",
+      "withGlobalTauri": true
+    }
+  }
+}
