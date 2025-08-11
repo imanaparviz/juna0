@@ -1,7 +1,13 @@
 /**
  * BRAIN COMMUNICATION MODULE
  * Handles all communication between Juna Frontend (Face) and Brain Backend
- * Implements the exact interface specification provided
+ * 
+ * IMPLEMENTS EXACT TAURI API SPECIFICATION:
+ * - process_query(input: string) → QueryResponse
+ * - get_session_status() → SessionStatus  
+ * - reset_session() → Result<(), ErrorResponse>
+ * 
+ * Progress updates delivered via Tauri events during execution.
  */
 
 import { invoke } from "@tauri-apps/api/tauri";
@@ -33,29 +39,23 @@ export class BrainCommunication {
 
   /**
    * Send a query to the Brain backend
-   * @param {string} query - User's natural language input
-   * @param {Object} config - Optional configuration
+   * @param {string} input - User's natural language input
    * @returns {Promise<QueryResponse>}
    */
-  async processQuery(query, config = null) {
-    if (!query || typeof query !== 'string') {
-      throw new Error("Query must be a non-empty string");
+  async processQuery(input) {
+    if (!input || typeof input !== 'string') {
+      throw new Error("Input must be a non-empty string");
     }
 
-    if (query.length > 10000) {
-      throw new Error("Query exceeds maximum length of 10000 characters");
+    if (input.length > 10000) {
+      throw new Error("Input exceeds maximum length of 10000 characters");
     }
 
     try {
-      console.log("🔄 Sending query to Brain:", query);
+      console.log("🔄 Sending query to Brain:", input);
       
       const response = await invoke("process_query", { 
-        query: query.trim(),
-        config: config || {
-          context_collection: true,
-          timeout_ms: 60000,
-          verbose_mode: false
-        }
+        input: input.trim()
       });
 
       console.log("✅ Received response from Brain:", response);
@@ -85,14 +85,20 @@ export class BrainCommunication {
   async resetSession() {
     try {
       console.log("🔄 Resetting Brain session");
-      await invoke("reset_session");
-      console.log("✅ Brain session reset successfully");
+      const result = await invoke("reset_session");
+      console.log("✅ Brain session reset successfully", result);
       
       // Notify listeners about session reset
       this.emit('session_reset', { timestamp: Date.now() });
     } catch (error) {
       console.error("❌ Failed to reset Brain session:", error);
-      throw new Error(`Session reset failed: ${error.message}`);
+      
+      // Check if error is a structured ErrorResponse
+      if (error.error_code && error.message) {
+        throw error; // Re-throw structured error
+      } else {
+        throw new Error(`Session reset failed: ${error.message || error}`);
+      }
     }
   }
 

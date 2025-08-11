@@ -687,7 +687,7 @@ JunaVoiceInterface.prototype.setupBrainEventHandlers = function() {
   });
 };
 
-JunaVoiceInterface.prototype.processBrainQuery = async function(query) {
+JunaVoiceInterface.prototype.processBrainQuery = async function(input) {
   if (this.isProcessingQuery) {
     this.showNotification("Please wait for current query to complete", "warning");
     return;
@@ -700,8 +700,8 @@ JunaVoiceInterface.prototype.processBrainQuery = async function(query) {
     // Show processing indicator
     this.showProcessingIndicator();
     
-    // Send query to Brain
-    const response = await this.brain.processQuery(query);
+    // Send input to Brain (updated parameter name)
+    const response = await this.brain.processQuery(input);
     
     // Render response based on type
     this.renderBrainResponse(response);
@@ -711,15 +711,28 @@ JunaVoiceInterface.prototype.processBrainQuery = async function(query) {
     
   } catch (error) {
     console.error("Failed to process Brain query:", error);
-    this.showNotification(`Query failed: ${error.message}`, "error");
     
-    // Render error response
-    this.messageRenderer.renderErrorResponse({
-      success: false,
-      response_type: "ERROR",
-      message: error.message,
-      metadata: { error_code: "COMMUNICATION_FAILED" }
-    });
+    // Handle structured ErrorResponse
+    if (error.error_code && error.message) {
+      this.showNotification(`${error.message}`, "error");
+      this.messageRenderer.renderErrorResponse({
+        success: false,
+        response_type: "ERROR",
+        message: error.message,
+        metadata: {
+          error_code: error.error_code,
+          details: error.details
+        }
+      });
+    } else {
+      this.showNotification(`Query failed: ${error.message}`, "error");
+      this.messageRenderer.renderErrorResponse({
+        success: false,
+        response_type: "ERROR",
+        message: error.message,
+        metadata: { error_code: "COMMUNICATION_FAILED" }
+      });
+    }
     
   } finally {
     this.isProcessingQuery = false;
