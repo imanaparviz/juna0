@@ -1,7 +1,11 @@
 /**
  * JUNA - AI VOICE ASSISTANT INTERFACE
  * High-performance voice interface for AI agent interaction
+ * Integrated with Brain backend for intelligent responses
  */
+
+import { BrainCommunication } from './brain-communication.js';
+import { MessageRenderer } from './message-renderer.js';
 
 // ============================================================================
 // GLOBAL STATE AND CONFIGURATION
@@ -19,6 +23,13 @@ class JunaVoiceInterface {
     this.currentAudioBlob = null;
     this.currentMode = "voice"; // 'voice' or 'chat'
     this.chatHistory = [];
+    
+    // Brain communication
+    this.brain = null;
+    this.messageRenderer = null;
+    this.currentSession = null;
+    this.isProcessingQuery = false;
+    this.currentTaskId = null;
 
     // Performance optimization - cache DOM elements
     this.elements = {
@@ -59,16 +70,20 @@ class JunaVoiceInterface {
       },
     };
 
-    this.init();
+    // Note: init() will be called asynchronously from the DOMContentLoaded event
   }
 
   // ============================================================================
   // INITIALIZATION
   // ============================================================================
 
-  init() {
+  async init() {
     this.cacheDOMElements();
     this.bindEvents();
+    
+    // Initialize Brain communication
+    await this.initializeBrainCommunication();
+    
     this.updateUI();
     this.showNotification("Juna ready - Click to start talking!", "success");
   }
@@ -96,7 +111,9 @@ class JunaVoiceInterface {
     this.elements.chatInput = document.getElementById("chat-input");
     this.elements.sendMessageBtn = document.getElementById("send-message-btn");
     this.elements.clearChatBtn = document.getElementById("clear-chat-btn");
+    this.elements.sessionResetBtn = document.getElementById("session-reset-btn");
     this.elements.charCount = document.getElementById("char-count");
+    this.elements.sessionInfo = document.getElementById("session-info");
   }
 
   bindEvents() {
@@ -130,6 +147,9 @@ class JunaVoiceInterface {
     );
     this.elements.clearChatBtn.addEventListener("click", () =>
       this.clearChat()
+    );
+    this.elements.sessionResetBtn.addEventListener("click", () =>
+      this.resetBrainSession()
     );
     this.elements.chatInput.addEventListener("input", (e) =>
       this.updateCharCount(e)
@@ -476,6 +496,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the Juna voice interface
   window.junaVoiceInterface = new JunaVoiceInterface();
+  
+  // Initialize asynchronously
+  window.junaVoiceInterface.init().catch(error => {
+    console.error("Failed to initialize Juna Voice Interface:", error);
+  });
 
   // Cleanup on page unload
   window.addEventListener("beforeunload", () => {
@@ -516,30 +541,28 @@ JunaVoiceInterface.prototype.switchToChatMode = function () {
 // CHAT FUNCTIONALITY
 // ============================================================================
 
-JunaVoiceInterface.prototype.sendChatMessage = function () {
+JunaVoiceInterface.prototype.sendChatMessage = async function () {
   const message = this.elements.chatInput.value.trim();
-  if (!message) return;
+  if (!message || this.isProcessingQuery) return;
 
-  // Add user message
-  this.addChatMessage(message, "user");
-
-  // Clear input
+  // Clear input first
   this.elements.chatInput.value = "";
   this.updateCharCount({ target: this.elements.chatInput });
 
-  // Simulate Juna response (placeholder for AI integration)
-  setTimeout(() => {
-    const responses = [
-      "I understand what you're saying. How can I help you further?",
-      "That's interesting! Let me think about that.",
-      "I'm here to assist you. What would you like to know?",
-      "Thanks for sharing that with me. Is there anything specific you'd like help with?",
-      "I'm processing your request. How else can I support you today?",
-    ];
-    const randomResponse =
-      responses[Math.floor(Math.random() * responses.length)];
-    this.addChatMessage(randomResponse, "juna");
-  }, 1000 + Math.random() * 2000);
+  // If Brain is not initialized, fallback to old behavior
+  if (!this.brain || !this.messageRenderer) {
+    this.addChatMessage(message, "user");
+    setTimeout(() => {
+      this.addChatMessage("Brain backend not connected. Please refresh the page.", "juna");
+    }, 1000);
+    return;
+  }
+
+  // Add user message using new renderer
+  this.messageRenderer.renderUserMessage(message);
+
+  // Process query through Brain backend
+  await this.processBrainQuery(message);
 };
 
 JunaVoiceInterface.prototype.addChatMessage = function (message, sender) {
@@ -571,16 +594,29 @@ JunaVoiceInterface.prototype.addChatMessage = function (message, sender) {
   });
 };
 
-JunaVoiceInterface.prototype.clearChat = function () {
-  // Keep welcome message, remove others
-  const welcomeMessage =
-    this.elements.chatMessages.querySelector(".welcome-message");
-  this.elements.chatMessages.innerHTML = "";
-  if (welcomeMessage) {
-    this.elements.chatMessages.appendChild(welcomeMessage);
+JunaVoiceInterface.prototype.clearChat = async function () {
+  try {
+    // Reset Brain session if available
+    if (this.brain) {
+      await this.resetBrainSession();
+    }
+    
+    // Keep welcome message, remove others
+    const welcomeMessage =
+      this.elements.chatMessages.querySelector(".welcome-message");
+    this.elements.chatMessages.innerHTML = "";
+    if (welcomeMessage) {
+      this.elements.chatMessages.appendChild(welcomeMessage);
+    }
+    
+    // Clear local chat history
+    this.chatHistory = [];
+    
+    this.showNotification("Chat and session cleared", "success");
+  } catch (error) {
+    console.error("Failed to clear chat:", error);
+    this.showNotification("Failed to clear session", "error");
   }
-  this.chatHistory = [];
-  this.showNotification("Chat cleared", "success");
 };
 
 JunaVoiceInterface.prototype.updateCharCount = function (event) {
@@ -600,4 +636,224 @@ JunaVoiceInterface.prototype.escapeHtml = function (text) {
   return text.replace(/[&<>"']/g, function (m) {
     return map[m];
   });
+};
+
+// ============================================================================
+// BRAIN COMMUNICATION METHODS
+// ============================================================================
+
+JunaVoiceInterface.prototype.initializeBrainCommunication = async function() {
+  try {
+    console.log("🧠 Initializing Brain communication...");
+    
+    // Initialize Brain communication
+    this.brain = new BrainCommunication();
+    
+    // Initialize message renderer
+    this.messageRenderer = new MessageRenderer(this.elements.chatMessages);
+    
+    // Setup event handlers
+    this.setupBrainEventHandlers();
+    
+    // Get initial session status
+    this.currentSession = await this.brain.getSessionStatus();
+    
+    console.log("✅ Brain communication initialized successfully");
+  } catch (error) {
+    console.error("❌ Failed to initialize Brain communication:", error);
+    this.showNotification("Failed to connect to Brain backend", "error");
+  }
+};
+
+JunaVoiceInterface.prototype.setupBrainEventHandlers = function() {
+  // Progress update handler
+  this.brain.on('progress_update', (update) => {
+    this.handleProgressUpdate(update);
+  });
+  
+  // Error handler
+  this.brain.on('brain_error', (error) => {
+    this.handleBrainError(error);
+  });
+  
+  // Session event handler
+  this.brain.on('session_event', (event) => {
+    this.handleSessionEvent(event);
+  });
+  
+  // Session reset handler
+  this.brain.on('session_reset', (data) => {
+    this.handleSessionReset(data);
+  });
+};
+
+JunaVoiceInterface.prototype.processBrainQuery = async function(query) {
+  if (this.isProcessingQuery) {
+    this.showNotification("Please wait for current query to complete", "warning");
+    return;
+  }
+  
+  this.isProcessingQuery = true;
+  this.currentTaskId = `task_${Date.now()}`;
+  
+  try {
+    // Show processing indicator
+    this.showProcessingIndicator();
+    
+    // Send query to Brain
+    const response = await this.brain.processQuery(query);
+    
+    // Render response based on type
+    this.renderBrainResponse(response);
+    
+    // Update session info
+    this.updateSessionInfo();
+    
+  } catch (error) {
+    console.error("Failed to process Brain query:", error);
+    this.showNotification(`Query failed: ${error.message}`, "error");
+    
+    // Render error response
+    this.messageRenderer.renderErrorResponse({
+      success: false,
+      response_type: "ERROR",
+      message: error.message,
+      metadata: { error_code: "COMMUNICATION_FAILED" }
+    });
+    
+  } finally {
+    this.isProcessingQuery = false;
+    this.hideProcessingIndicator();
+  }
+};
+
+JunaVoiceInterface.prototype.renderBrainResponse = function(response) {
+  switch (response.response_type) {
+    case "SIMPLE":
+      this.messageRenderer.renderSimpleResponse(response);
+      break;
+    case "COMPLEX":
+      this.messageRenderer.renderComplexResponse(response);
+      // Complete any active progress messages
+      if (this.currentTaskId) {
+        this.messageRenderer.completeProgressMessage(this.currentTaskId, response);
+      }
+      break;
+    case "DIRECT":
+      this.messageRenderer.renderDirectResponse(response);
+      break;
+    case "ERROR":
+      this.messageRenderer.renderErrorResponse(response);
+      break;
+    default:
+      this.messageRenderer.renderSimpleResponse(response);
+  }
+};
+
+JunaVoiceInterface.prototype.handleProgressUpdate = function(update) {
+  console.log("📊 Progress update:", update);
+  
+  // Render or update progress message
+  this.messageRenderer.renderProgressUpdate(update, this.currentTaskId);
+  
+  // Show progress notification for major steps
+  if (update.type === "STEP_COMPLETE") {
+    this.showNotification(`${update.message}`, "success");
+  }
+};
+
+JunaVoiceInterface.prototype.handleBrainError = function(error) {
+  console.error("🧠 Brain error:", error);
+  
+  this.messageRenderer.renderErrorResponse({
+    success: false,
+    response_type: "ERROR",
+    message: error.message,
+    metadata: {
+      error_code: error.error_code,
+      details: error.details
+    }
+  });
+  
+  this.showNotification(`Brain error: ${error.message}`, "error");
+};
+
+JunaVoiceInterface.prototype.handleSessionEvent = function(event) {
+  console.log("🔄 Session event:", event);
+  // Handle session-related events
+};
+
+JunaVoiceInterface.prototype.handleSessionReset = function(data) {
+  console.log("🔄 Session reset:", data);
+  
+  // Clear chat messages but keep welcome message
+  const welcomeMessage = this.elements.chatMessages.querySelector('.welcome-message');
+  this.elements.chatMessages.innerHTML = '';
+  if (welcomeMessage) {
+    this.elements.chatMessages.appendChild(welcomeMessage);
+  }
+  
+  this.showNotification("Session reset successfully", "success");
+};
+
+JunaVoiceInterface.prototype.resetBrainSession = async function() {
+  try {
+    this.showNotification("Resetting session...", "warning");
+    await this.brain.resetSession();
+    this.currentSession = await this.brain.getSessionStatus();
+  } catch (error) {
+    console.error("Failed to reset session:", error);
+    this.showNotification(`Failed to reset session: ${error.message}`, "error");
+  }
+};
+
+JunaVoiceInterface.prototype.updateSessionInfo = async function() {
+  try {
+    this.currentSession = await this.brain.getSessionStatus();
+    this.updateSessionUI();
+  } catch (error) {
+    console.error("Failed to update session info:", error);
+  }
+};
+
+JunaVoiceInterface.prototype.updateSessionUI = function() {
+  if (!this.currentSession) return;
+  
+  // Update session info in UI if elements exist
+  const sessionInfo = document.getElementById('session-info');
+  if (sessionInfo) {
+    sessionInfo.innerHTML = `
+      <div class="session-details">
+        <span class="session-id">Session: ${this.currentSession.session_id.substring(0, 8)}...</span>
+        <span class="message-count">Messages: ${this.currentSession.message_count}</span>
+        <span class="memory-size">Memory: ${this.formatBytes(this.currentSession.memory_size)}</span>
+      </div>
+    `;
+  }
+};
+
+JunaVoiceInterface.prototype.showProcessingIndicator = function() {
+  // Show typing indicator or processing state
+  const typingIndicator = document.getElementById('typing-indicator');
+  if (typingIndicator) {
+    typingIndicator.classList.add('active');
+    typingIndicator.textContent = 'Juna is thinking...';
+  }
+};
+
+JunaVoiceInterface.prototype.hideProcessingIndicator = function() {
+  // Hide typing indicator
+  const typingIndicator = document.getElementById('typing-indicator');
+  if (typingIndicator) {
+    typingIndicator.classList.remove('active');
+    typingIndicator.textContent = '';
+  }
+};
+
+JunaVoiceInterface.prototype.formatBytes = function(bytes) {
+  if (bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };

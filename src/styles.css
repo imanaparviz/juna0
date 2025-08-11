@@ -561,13 +561,19 @@ body {
 .chat-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: var(--space-lg);
   background: var(--color-bg-secondary);
   border-bottom: 2px solid var(--color-bg-tertiary);
 }
 
-.chat-header h2 {
+.chat-title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.chat-title h2 {
   margin: 0;
   color: var(--color-text-primary);
   font-size: 1.5rem;
@@ -576,6 +582,57 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.chat-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.session-info {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.session-details {
+  display: flex;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.session-details span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.session-status {
+  color: var(--color-success) !important;
+}
+
+.session-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-bg-tertiary);
+  border: none;
+  border-radius: var(--border-radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-smooth);
+}
+
+.session-btn:hover {
+  background: var(--color-accent);
+  color: var(--color-text-primary);
+  transform: translateY(-1px);
+}
+
+.session-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .clear-chat-btn {
@@ -821,6 +878,309 @@ body {
 
 .typing-indicator.active {
   animation: pulse 1.5s infinite;
+}
+
+/* ==========================================================================
+   BRAIN RESPONSE COMPONENTS
+   ========================================================================== */
+
+/* Response Type Badges */
+.response-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.response-type-badge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  border: 1px solid;
+}
+
+.response-type-badge.simple {
+  background: rgba(45, 213, 115, 0.1);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.response-type-badge.complex {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.response-type-badge.direct {
+  background: rgba(255, 165, 2, 0.1);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.response-type-badge.error {
+  background: rgba(255, 71, 87, 0.1);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* Response Metadata */
+.response-metadata {
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-bg-tertiary);
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-sm);
+  font-size: 11px;
+}
+
+.metadata-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--color-text-muted);
+}
+
+.metadata-label {
+  font-weight: 500;
+}
+
+.metadata-value {
+  color: var(--color-text-secondary);
+  font-family: 'Courier New', monospace;
+}
+
+/* Simple metadata (inline) */
+.juna-message.simple .response-metadata {
+  border-top: none;
+  margin-top: var(--space-sm);
+  padding-top: 0;
+}
+
+.juna-message.simple .metadata-item {
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* Progress Messages */
+.progress-message {
+  align-self: center;
+  max-width: 90%;
+  margin: var(--space-sm) 0;
+}
+
+.progress-content {
+  background: var(--color-bg-secondary);
+  border: 2px solid var(--color-bg-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--space-md);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.progress-type {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 6px;
+  border-radius: 8px;
+  border: 1px solid;
+}
+
+.progress-type.context_collection {
+  background: rgba(102, 126, 234, 0.1);
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.progress-type.task_execution {
+  background: rgba(255, 165, 2, 0.1);
+  border-color: var(--color-warning);
+  color: var(--color-warning);
+}
+
+.progress-type.step_complete {
+  background: rgba(45, 213, 115, 0.1);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.progress-step {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-family: 'Courier New', monospace;
+}
+
+.progress-message-text {
+  font-size: 14px;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-md);
+}
+
+.progress-bar-container {
+  height: 6px;
+  background: var(--color-bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--gradient-primary);
+  border-radius: 3px;
+  transition: width 0.5s ease-out;
+  position: relative;
+}
+
+.progress-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    transparent 100%);
+  animation: progressShimmer 2s infinite;
+}
+
+.progress-completion {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-bg-tertiary);
+  color: var(--color-success);
+}
+
+.completion-icon {
+  font-size: 14px;
+}
+
+.completion-text {
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.progress-message.completed {
+  opacity: 0.7;
+}
+
+/* Error Messages */
+.juna-message.error .message-avatar {
+  background: var(--color-danger) !important;
+  color: white;
+}
+
+.error-message {
+  color: var(--color-danger) !important;
+}
+
+.error-details {
+  margin-top: var(--space-sm);
+  padding: var(--space-sm);
+  background: rgba(255, 71, 87, 0.05);
+  border-radius: var(--border-radius-sm);
+  border-left: 3px solid var(--color-danger);
+}
+
+.error-code {
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-danger);
+  text-transform: uppercase;
+}
+
+.error-details-expandable {
+  margin-top: var(--space-sm);
+}
+
+.error-details-expandable summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.error-details-expandable pre {
+  margin-top: var(--space-sm);
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  background: var(--color-bg-primary);
+  padding: var(--space-sm);
+  border-radius: var(--border-radius-sm);
+  overflow-x: auto;
+}
+
+/* Animations */
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Mobile Brain Response Components */
+@media (max-width: 768px) {
+  /* Brain Response Components Mobile */
+  .response-metadata {
+    margin-top: var(--space-sm);
+  }
+
+  .metadata-grid {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .response-type-badge {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+
+  .progress-content {
+    padding: var(--space-sm);
+  }
+
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
+  }
+
+  .session-info {
+    font-size: 11px;
+  }
+
+  .session-details {
+    gap: var(--space-sm);
+  }
+
+  .chat-actions {
+    gap: 4px;
+  }
+
+  .session-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .session-btn svg {
+    width: 14px;
+    height: 14px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

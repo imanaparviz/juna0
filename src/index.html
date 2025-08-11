@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
-    <script type="module" src="/main.js" defer></script>
+    <script type="module" src="./main.js" defer></script>
   </head>
 
   <body>
@@ -139,21 +139,36 @@
     <!-- Chat Interface -->
     <div id="chat-container" class="chat-container hidden">
       <div class="chat-header">
-        <h2>Chat with Juna</h2>
-        <button id="clear-chat-btn" class="clear-chat-btn">
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <polyline points="3,6 5,6 21,6"></polyline>
-            <path
-              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-            ></path>
-          </svg>
-          Clear
-        </button>
+        <div class="chat-title">
+          <h2>Chat with Juna</h2>
+          <div id="session-info" class="session-info">
+            <div class="session-details">
+              <span class="session-status">Connecting...</span>
+            </div>
+          </div>
+        </div>
+        <div class="chat-actions">
+          <button id="session-reset-btn" class="session-btn" title="Reset Session">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+          </button>
+          <button id="clear-chat-btn" class="clear-chat-btn">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polyline points="3,6 5,6 21,6"></polyline>
+              <path
+                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+              ></path>
+            </svg>
+            Clear
+          </button>
+        </div>
       </div>
 
       <div id="chat-messages" class="chat-messages">
