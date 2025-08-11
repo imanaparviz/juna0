@@ -17,6 +17,8 @@ class JunaVoiceInterface {
     this.timerInterval = null;
     this.currentAudioURL = null;
     this.currentAudioBlob = null;
+    this.currentMode = "voice"; // 'voice' or 'chat'
+    this.chatHistory = [];
 
     // Performance optimization - cache DOM elements
     this.elements = {
@@ -28,6 +30,16 @@ class JunaVoiceInterface {
       saveButton: null,
       deleteButton: null,
       notification: null,
+      voiceModeBtn: null,
+      chatModeBtn: null,
+      chatContainer: null,
+      chatMessages: null,
+      chatInput: null,
+      sendMessageBtn: null,
+      clearChatBtn: null,
+      charCount: null,
+      recordingInterface: null,
+      voiceControls: null,
     };
 
     // Configuration
@@ -58,13 +70,11 @@ class JunaVoiceInterface {
     this.cacheDOMElements();
     this.bindEvents();
     this.updateUI();
-    this.showNotification(
-      "Juna ready - Click to start talking!",
-      "success"
-    );
+    this.showNotification("Juna ready - Click to start talking!", "success");
   }
 
   cacheDOMElements() {
+    // Voice interface elements
     this.elements.micButton = document.getElementById("mic-button");
     this.elements.statusText = document.getElementById("status-text");
     this.elements.timer = document.getElementById("timer");
@@ -73,6 +83,20 @@ class JunaVoiceInterface {
     this.elements.saveButton = document.getElementById("save-button");
     this.elements.deleteButton = document.getElementById("delete-button");
     this.elements.notification = document.getElementById("notification");
+    this.elements.recordingInterface = document.querySelector(
+      ".recording-interface"
+    );
+    this.elements.voiceControls = document.querySelector(".voice-controls");
+
+    // Chat interface elements
+    this.elements.voiceModeBtn = document.getElementById("voice-mode-btn");
+    this.elements.chatModeBtn = document.getElementById("chat-mode-btn");
+    this.elements.chatContainer = document.getElementById("chat-container");
+    this.elements.chatMessages = document.getElementById("chat-messages");
+    this.elements.chatInput = document.getElementById("chat-input");
+    this.elements.sendMessageBtn = document.getElementById("send-message-btn");
+    this.elements.clearChatBtn = document.getElementById("clear-chat-btn");
+    this.elements.charCount = document.getElementById("char-count");
   }
 
   bindEvents() {
@@ -91,6 +115,31 @@ class JunaVoiceInterface {
     this.elements.deleteButton.addEventListener("click", () =>
       this.deleteRecording()
     );
+
+    // Interface mode toggle
+    this.elements.voiceModeBtn.addEventListener("click", () =>
+      this.switchToVoiceMode()
+    );
+    this.elements.chatModeBtn.addEventListener("click", () =>
+      this.switchToChatMode()
+    );
+
+    // Chat functionality
+    this.elements.sendMessageBtn.addEventListener("click", () =>
+      this.sendChatMessage()
+    );
+    this.elements.clearChatBtn.addEventListener("click", () =>
+      this.clearChat()
+    );
+    this.elements.chatInput.addEventListener("input", (e) =>
+      this.updateCharCount(e)
+    );
+    this.elements.chatInput.addEventListener("keypress", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        this.sendChatMessage();
+      }
+    });
 
     // Keyboard shortcuts
     document.addEventListener("keydown", (e) =>
@@ -437,3 +486,118 @@ document.addEventListener("DOMContentLoaded", () => {
 
   console.log("🤖 Juna Voice Interface initialized successfully!");
 });
+
+// ============================================================================
+// INTERFACE TOGGLE FUNCTIONALITY
+// ============================================================================
+
+JunaVoiceInterface.prototype.switchToVoiceMode = function () {
+  this.currentMode = "voice";
+  this.elements.voiceModeBtn.classList.add("active");
+  this.elements.chatModeBtn.classList.remove("active");
+  this.elements.chatContainer.classList.add("hidden");
+  this.elements.recordingInterface.style.display = "flex";
+  this.elements.voiceControls.style.display = "flex";
+  this.showNotification("Switched to voice mode", "success");
+};
+
+JunaVoiceInterface.prototype.switchToChatMode = function () {
+  this.currentMode = "chat";
+  this.elements.chatModeBtn.classList.add("active");
+  this.elements.voiceModeBtn.classList.remove("active");
+  this.elements.chatContainer.classList.remove("hidden");
+  this.elements.recordingInterface.style.display = "none";
+  this.elements.voiceControls.style.display = "none";
+  this.elements.chatInput.focus();
+  this.showNotification("Switched to chat mode", "success");
+};
+
+// ============================================================================
+// CHAT FUNCTIONALITY
+// ============================================================================
+
+JunaVoiceInterface.prototype.sendChatMessage = function () {
+  const message = this.elements.chatInput.value.trim();
+  if (!message) return;
+
+  // Add user message
+  this.addChatMessage(message, "user");
+
+  // Clear input
+  this.elements.chatInput.value = "";
+  this.updateCharCount({ target: this.elements.chatInput });
+
+  // Simulate Juna response (placeholder for AI integration)
+  setTimeout(() => {
+    const responses = [
+      "I understand what you're saying. How can I help you further?",
+      "That's interesting! Let me think about that.",
+      "I'm here to assist you. What would you like to know?",
+      "Thanks for sharing that with me. Is there anything specific you'd like help with?",
+      "I'm processing your request. How else can I support you today?",
+    ];
+    const randomResponse =
+      responses[Math.floor(Math.random() * responses.length)];
+    this.addChatMessage(randomResponse, "juna");
+  }, 1000 + Math.random() * 2000);
+};
+
+JunaVoiceInterface.prototype.addChatMessage = function (message, sender) {
+  const messageDiv = document.createElement("div");
+  messageDiv.className = `message ${sender}-message`;
+
+  const time = new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  messageDiv.innerHTML = `
+    <div class="message-avatar">${sender === "user" ? "U" : "J"}</div>
+    <div class="message-content">
+      <p>${this.escapeHtml(message)}</p>
+      <span class="message-time">${time}</span>
+    </div>
+  `;
+
+  this.elements.chatMessages.appendChild(messageDiv);
+  this.elements.chatMessages.scrollTop =
+    this.elements.chatMessages.scrollHeight;
+
+  // Store in chat history
+  this.chatHistory.push({
+    message: message,
+    sender: sender,
+    timestamp: new Date().toISOString(),
+  });
+};
+
+JunaVoiceInterface.prototype.clearChat = function () {
+  // Keep welcome message, remove others
+  const welcomeMessage =
+    this.elements.chatMessages.querySelector(".welcome-message");
+  this.elements.chatMessages.innerHTML = "";
+  if (welcomeMessage) {
+    this.elements.chatMessages.appendChild(welcomeMessage);
+  }
+  this.chatHistory = [];
+  this.showNotification("Chat cleared", "success");
+};
+
+JunaVoiceInterface.prototype.updateCharCount = function (event) {
+  const length = event.target.value.length;
+  this.elements.charCount.textContent = `${length}/500`;
+  this.elements.sendMessageBtn.disabled = length === 0;
+};
+
+JunaVoiceInterface.prototype.escapeHtml = function (text) {
+  const map = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  };
+  return text.replace(/[&<>"']/g, function (m) {
+    return map[m];
+  });
+};

@@ -19,11 +19,7 @@
       <!-- Floating Microphone Button -->
       <main class="recording-interface">
         <div class="mic-container">
-          <button
-            id="mic-button"
-            class="mic-button"
-            aria-label="Talk to Juna"
-          >
+          <button id="mic-button" class="mic-button" aria-label="Talk to Juna">
             <svg
               class="mic-icon"
               viewBox="0 0 24 24"
@@ -58,9 +54,42 @@
         </div>
       </main>
 
+      <!-- Interface Toggle -->
+      <div class="interface-toggle">
+        <button id="voice-mode-btn" class="toggle-btn active">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"
+            ></path>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+            <line x1="12" y1="19" x2="12" y2="23"></line>
+            <line x1="8" y1="23" x2="16" y2="23"></line>
+          </svg>
+          Voice
+        </button>
+        <button id="chat-mode-btn" class="toggle-btn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+            ></path>
+          </svg>
+          Chat
+        </button>
+      </div>
+
       <!-- Modern UI Controls -->
       <aside class="controls-panel">
-        <div class="control-group">
+        <div class="control-group voice-controls">
           <button id="play-button" class="control-btn" disabled>
             <svg
               viewBox="0 0 24 24"
@@ -98,13 +127,74 @@
             >
               <polyline points="3,6 5,6 21,6"></polyline>
               <path
-                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2 2h4a2 2 0 0 1 2 2v2"
               ></path>
             </svg>
             Delete
           </button>
         </div>
       </aside>
+    </div>
+
+    <!-- Chat Interface -->
+    <div id="chat-container" class="chat-container hidden">
+      <div class="chat-header">
+        <h2>Chat with Juna</h2>
+        <button id="clear-chat-btn" class="clear-chat-btn">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="3,6 5,6 21,6"></polyline>
+            <path
+              d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+            ></path>
+          </svg>
+          Clear
+        </button>
+      </div>
+
+      <div id="chat-messages" class="chat-messages">
+        <div class="welcome-message">
+          <div class="message juna-message">
+            <div class="message-avatar">J</div>
+            <div class="message-content">
+              <p>Hi! I'm Juna, your AI assistant. How can I help you today?</p>
+              <span class="message-time">now</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-input-container">
+        <div class="chat-input-wrapper">
+          <input
+            type="text"
+            id="chat-input"
+            class="chat-input"
+            placeholder="Type your message to Juna..."
+            maxlength="500"
+            autocomplete="off"
+          />
+          <button id="send-message-btn" class="send-btn" disabled>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+            </svg>
+          </button>
+        </div>
+        <div class="input-status">
+          <span id="char-count">0/500</span>
+          <span class="typing-indicator" id="typing-indicator"></span>
+        </div>
+      </div>
     </div>
 
     <!-- Notification System -->
